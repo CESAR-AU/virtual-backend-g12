@@ -20,3 +20,24 @@ for nota in notas[len(notas)-3:]:
 
 for index in range(3):
     print('Nota: {}'.format(notas[index]))
+
+aprobados = ['Juna']
+
+for aprobado in aprobados:
+    print('El apbobado es: ', aprobado)
+else:
+    print('Ya no hay mas aprobados')
+
+##########################################################
+productos = ['Manzanas', 'Peras', 'Tazas', 'Tallarines']
+busqueda = input('Buscar producto: ')
+for producto in productos:
+    if(producto == busqueda):
+        print('Producto {} encontrado'.format(busqueda))
+        break
+else:
+    print('Producto {} no encontrado'.format(busqueda))
+
+print('Finalizo la busqueda...')
+#########################################################
+
