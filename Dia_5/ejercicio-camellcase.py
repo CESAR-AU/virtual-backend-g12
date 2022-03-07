@@ -1,7 +1,3 @@
-
-from math import fabs
-
-
 class Camelcase():
     def __init__(self, *args):
         '''Las palabras que ingrese en los argumentos (args) se omitiran al momento de la conversion'''
