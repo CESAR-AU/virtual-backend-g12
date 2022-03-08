@@ -91,3 +91,5 @@ def serie_collatz(number):
 
 resultado = serie_collatz(input('Ingrese un numero: '))
 print(resultado)
+
+#demo
