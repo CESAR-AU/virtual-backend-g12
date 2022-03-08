@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def inicial():
-    print('Me llamaron!')
+    print('Me llamaron!') 
     return 'Bienvenido a mi API 🔌'
 
 @app.route('/usuarios')
