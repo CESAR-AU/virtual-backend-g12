@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        #pre{
+          font-size: 16px;
+        }
+    </style>
+  </head>
+  <body>
+    <h1 id="h1">Hola</h1>
+    <pre id="pre"></pre>
+    <script>
+      const BASE_URL = "http://66.94.104.30:8080";
+      fetch(`${BASE_URL}/cliente/1`, {'method': "GET"})
+      .then((respuesta)=>{
+          return respuesta.json();
+      })
+      .then((data)=>{
+          console.log(data);
+          const pre = document.getElementById('pre')
+          pre.innerText = `${JSON.stringify(data)}`;
+      })
+      .catch((error)=>{console.log(error)})
+    </script>
+  </body>
+</html>
