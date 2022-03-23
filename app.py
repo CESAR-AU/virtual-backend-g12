@@ -2,15 +2,23 @@ from datetime import datetime
 from flask import Flask, request
 from flask_restful import Api
 
-from controllers.ingredientes import IngredientesController, PruebaController
+from controllers.ingredientes import (IngredientesController, PruebaController, IngredienteController)
+from controllers.recetas import (BuscarRecetaController, RectasController, RecetaController)
+from controllers.preparaciones import PreparacionesController
+from controllers.ingredientes_recetas import IngredientesRecetasController
 from controllers.usuario import UsuariosController
 from config import conexion, validador
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+# print(environ.get('NOMBRE'))
 
 app = Flask(__name__)
 api = Api(app=app)
 
 # print(app.config)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:amigos@127.0.0.1:3307/recetario'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']  = False
 conexion.init_app(app)
 validador.init_app(app=app)
@@ -25,6 +33,12 @@ def inicio():
     return {'message':'Bienvenido a mi API de recetas'}, 200
 
 api.add_resource(IngredientesController, '/ingredientes', '/ingrediente')
+api.add_resource(IngredienteController, '/ingrediente/<int:id>')
+api.add_resource(RectasController, '/recetas', '/receta')
+api.add_resource(RecetaController, '/receta/<int:id>')
+api.add_resource(BuscarRecetaController, '/buscar_receta')
+api.add_resource(PreparacionesController, '/preparacion')
+api.add_resource(IngredientesRecetasController, '/ingrediente_receta')
 
 api.add_resource(UsuariosController, '/usuarios')
 

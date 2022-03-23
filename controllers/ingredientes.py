@@ -58,6 +58,60 @@ class IngredientesController(Resource):
                 'data': request.get_json()
             }, 500
 
+class IngredienteController(Resource):
+    def get(self, id):
+        #filter_by > 
+        ingrediente = conexion.session.query(Ingrediente).filter_by(id=id).first()        
+        print(ingrediente)
+        if ingrediente:
+            ingredientes_serializado = IngredienteResponseDTO().dump(ingrediente)
+            return{
+                'message':'Ingrediente obtenido',
+                'success': True,
+                'data': ingredientes_serializado
+            }, 200
+        else:
+            return{
+                'message':'El Ingrediente a buscar no existe',
+                'success': False,
+                'data': {}
+            }, 404
+    
+    def put(self, id):
+        try:
+            ingrediente = conexion.session.query(Ingrediente).filter_by(id=id).first()
+            if(ingrediente):
+                body = request.get_json()
+                #Validando la data de entrada
+                data_validada = IngredienteRequestDTO().load(body)
+                ingrediente.nombre = data_validada.get('nombre')
+                conexion.session.commit()
+                ingrediente_serializado = IngredienteResponseDTO().dump(ingrediente)
+                return{
+                    'message':'Ingredientes actualizado correctamente',
+                    'success': True,
+                    'data': ingrediente_serializado
+                }, 200
+            else:
+                return{
+                    'message':'El ingrediente a actualizar no fue encontrado',
+                    'success': False,
+                    'data': {}
+                }, 404
+        except ValidationError as ex:
+            return{
+                'message':'La informacion es incorrecta',
+                'error': ex.args,
+                'success': False,
+            }, 400
+        except Exception as ex:
+            return{
+                'message':'Hubo un error al actualizar el ingrediente',
+                'error': ex.args,
+                'success': False,
+                'data': request.get_json()
+            }, 500
+
 class PruebaController(Resource):
     def post(self):
         try:
