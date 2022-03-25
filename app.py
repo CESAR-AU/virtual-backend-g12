@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, request
 from flask_restful import Api
+import requests
 
 from controllers.ingredientes import (IngredientesController, PruebaController, IngredienteController)
 from controllers.recetas import (BuscarRecetaController, RectasController, RecetaController)
@@ -30,7 +31,10 @@ def status():
 
 @app.route('/', methods=['GET'])
 def inicio():
-    return {'message':'Bienvenido a mi API de recetas'}, 200
+    f = open('./app_page.html')
+    res = f.read()
+    return res
+    # return {'message':'Bienvenido a mi API de recetas'}, 200
 
 api.add_resource(IngredientesController, '/ingredientes', '/ingrediente')
 api.add_resource(IngredienteController, '/ingrediente/<int:id>')
