@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INICIO</title>
+</head>
+<body>
+    <h1>Hola bienvenidos a mi API de monedero</h1>
+    <p>Presentado por: {{nombre}}</p>
+    <p>El dia: {{dia}}</p>
+    <p>Integrantes:</p>
+    {#Comentario#}
+    <ol>
+        {% for integrante in integrantes %}
+        <li>{{integrante}}</li>
+        {% endfor %}
+    </ol>
+    <p><b>El usuario es:</b> {{usuario.nombre}} y tiene {{usuario.edad}} años, direccion: {{usuario.direccion}}</p>
+
+    <table border="1px">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Clasificado</th>
+                <th>Timado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seleccion in selecciones %}
+                <tr>
+                    <td>{{seleccion.nombre}} </td>
+                    <td>
+                        {% if seleccion.clasificado == true %}
+                            Nos vemos en Qatar
+                        {% elif seleccion.clasificado is false %}
+                            Con suete en el próximo
+                        {% else %}
+                            Aun no se sabe
+                        {% endif %}
+                    </td>
+                    <td>{{seleccion.timado}} </td>
+                </tr>
+            {% endfor %}
+        </tbody>        
+    </table>
+    
+    
+
+    <footer>By eRe</footer>
+</body>
+</html>
