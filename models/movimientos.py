@@ -16,5 +16,5 @@ class ModelMovimientos(conexion.Model):
     usuario_id = Column(ForeignKey(column='tbl_usuarios.id') ,type_=types.Integer)
     categoria_id = Column(ForeignKey(column='tbl_categorias.id') ,type_=types.Integer)
 
-    usuario = orm.relationship('ModelUsuario', backref='usuarios')
-    categoria = orm.relationship('ModelCategoria', backref='categorias')
+    usuario = orm.relationship('ModelUsuario', backref='usuario_movimientos')
+    categoria = orm.relationship('ModelCategoria', backref='categoria_movimientos')

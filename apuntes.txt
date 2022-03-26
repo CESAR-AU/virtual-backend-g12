@@ -1,1 +1,3 @@
 $  pip install flask flask-restful flask-sqlalchemy flask-marshmallow mysqlclient
+$  pip install marshmallow-sqlalchemy python-dotenv
+$  pip install pip install bcrypt > para generar hash
