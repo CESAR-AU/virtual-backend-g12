@@ -13,8 +13,8 @@ class ModelMovimientos(conexion.Model):
     moneda = Column(type_=types.Enum('SOLES', 'DOLARES', 'EUROS'))
     fecha_creacion = Column(type_=types.DateTime(), nullable=False)
 
-    usuario_id = Column(ForeignKey(column='tbl_usuarios.id') ,type_=types.Integer)
-    categoria_id = Column(ForeignKey(column='tbl_categorias.id') ,type_=types.Integer)
+    usuario_id = Column(ForeignKey(column='tbl_usuarios.id'), type_=types.Integer)
+    categoria_id = Column(ForeignKey(column='tbl_categorias.id'), type_=types.Integer)
 
     usuario = orm.relationship('ModelUsuario', backref='usuario_movimientos')
     categoria = orm.relationship('ModelCategoria', backref='categoria_movimientos')

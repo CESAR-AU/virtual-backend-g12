@@ -1,11 +1,20 @@
+from email.mime.text import MIMEText
 from flask_restful import Resource, request
 from marshmallow import ValidationError
+# from sendgrid.helpers.mail import Email, To, Content, Mail
+from smtplib import SMTP
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from os import environ
+from datetime import datetime, timedelta
+from cryptography.fernet import Fernet
+import json
 
-from config import conexion
+from config import conexion, sendgrid
 from dtos.registro_dto import LogginDTO, RegistroDTO, UsuarioResponseDTO
+from dtos.usuario_dto import ResetPasswordRequestDTO
 from models.usuarios import ModelUsuario
 from utils.message import Message
-
 
 class RegistroController(Resource):
     def post(self):
@@ -34,6 +43,80 @@ class LogginController(Resource):
         except ValidationError as ex:
             return Message.GetMessage(message='Credenciales incorrectas', success=False, error=ex.args), 400
         except Exception as ex:
-            conexion.session.rollback()
+            # conexion.session.rollback()
             return Message.GetMessage(message='No se pudo inisiar la sesion', success=False, error=ex.args), 500
 
+
+class RecetPasswordController(Resource):
+    def post(self):
+        body = request.get_json()
+        #----------------- UTILIZANDO LA LIBRERIA DE PYTHON ------------------------------
+        try:
+            # Con la libreria propia de PY
+            mensaje = MIMEMultipart()
+            password_emisor = environ.get('EMAIL_PASSWORD')
+            email_emisor = environ.get('EMAIL_EMISOR')
+
+            data = ResetPasswordRequestDTO().load(body)
+            usuario_encontrado : ModelUsuario  = conexion.session.query(ModelUsuario).filter_by(correo = data.get('correo')).first()
+            if usuario_encontrado is not None:
+                texto = 'Hola, has solicitado el reinicio de tu contraseña, haz click en el siguiente link para cambiar, sino has sido tu ignora este mensaje: ....'
+                mensaje['Subject'] = 'Reiniciar contraseña APP Monedero'
+
+                # key = Fernet.generate_key()
+                fernet = Fernet(environ.get('FERNET_SECRET_KEY'))
+                print('1111111111111111111111111111111111111111', environ.get('FERNET_SECRET_KEY'))
+                mensaje_secreto = {
+                    'fecha_inicial': str(datetime.now() + timedelta(hours=1)),
+                    'fecha_caducidad': str(datetime.now() + timedelta(hours=2)),
+                    'id_usuario':usuario_encontrado.id
+                }
+                mensaje_secreto_str = json.dumps(mensaje_secreto)
+                mensaje_encriptado = fernet.encrypt(bytes(mensaje_secreto_str, 'utf-8'))
+
+                with open("templates/email/forgot_password2.html") as f:
+                    texto = f.read()
+                html = texto.format(usuario_encontrado.nombre, (environ.get('URL_FRONT')+'/nueva-contra?token='+mensaje_encriptado.decode('utf-8')))
+                #mensaje.attach(MIMEText(texto, 'plain'))
+                mensaje.attach(MIMEText(html, 'html'))
+                # enviando TLS:587 o SSL:465 ZOHO
+                emeisor_SMTP = SMTP('smtp.zoho.com', 587)
+                emeisor_SMTP.starttls()
+                emeisor_SMTP.login(email_emisor, password_emisor)
+                emeisor_SMTP.sendmail(
+                    from_addr=email_emisor,
+                    to_addrs=[usuario_encontrado.correo],                    
+                    msg=mensaje.as_string()
+                )
+                emeisor_SMTP.quit()
+                print('Correo enviado exitosamente')
+            else:
+                print('No se pudo enviar correo')
+            return Message.GetMessage(message='Correo enviado exitosamente', success=True, data=data), 200
+        except Exception as ex:
+            return Message.GetMessage(message='Hubo un error al recetear la password', success=False, error=ex.args), 500
+
+        #----------------- UTILIZANDO LA LIBRERIA DE SENDGRID ------------------------------
+        '''try:
+            # Envio de correo mediante SENDGRID
+            data = ResetPasswordRequestDTO().load(body)
+            usuario_encontrado : ModelUsuario  = conexion.session.query(ModelUsuario).filter_by(correo = data.get('correo')).first()
+            if usuario_encontrado is not None:
+                from_email = Email('no-reply-innova@hotmail.com')
+                to_email = To(usuario_encontrado.correo)
+                # to_email = To('cesarmf@c-innova.pe')
+                subject = 'Reinicia tu contraseña del Monedero'
+                content = Content('text/plain', 'Hola, has solicitado el reinicio de tu contraseña, haz click en el siguiente link para cambiar, sino has sido tu ignora este mensaje: ....')
+                mail = Mail(from_email, to_email, subject, content)
+                enviar_correo = sendgrid.client.mail.send.post(request_body=mail.get())
+
+                print('Correo enviado')
+                print(enviar_correo.status_code)
+                print(enviar_correo.body)
+                print(enviar_correo.headers)
+            else:
+                print('No se pudo enviar correo')
+            return Message.GetMessage(message='Correo enviado exitosamente', success=True), 200
+        except Exception as ex:
+            return Message.GetMessage(message='Hubo un error al recetear la password', success=False, error=ex.args), 500 '''
+                
