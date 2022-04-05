@@ -6,3 +6,7 @@ class ResetPasswordRequestDTO(validador.Schema):
 
 class ValidarTokenRequestDTO(validador.Schema):
     token = fields.String(required=True, validate=validate.Length(min=200, max=250))
+
+class ChangePasswordRequestDTO(validador.Schema):
+    token = fields.String(required=True, validate=validate.Length(min=200, max=250))
+    password = fields.String(required=True, validate=validate.Length(min=6, max=30))

@@ -12,9 +12,10 @@ import json
 
 from config import conexion, sendgrid
 from dtos.registro_dto import LogginDTO, RegistroDTO, UsuarioResponseDTO
-from dtos.usuario_dto import ResetPasswordRequestDTO
+from dtos.usuario_dto import ResetPasswordRequestDTO, ChangePasswordRequestDTO
 from models.usuarios import ModelUsuario
 from utils.message import Message
+from utils.enviar_correo import EnviarCorrreo
 
 class RegistroController(Resource):
     def post(self):
@@ -94,7 +95,7 @@ class RecetPasswordController(Resource):
                 print('No se pudo enviar correo')
             return Message.GetMessage(message='Correo enviado exitosamente', success=True, data=data), 200
         except Exception as ex:
-            return Message.GetMessage(message='Hubo un error al recetear la password', success=False, error=ex.args), 500
+            return Message.GetMessage(message='Hubo un error al enviar el correo para recetear la password', success=False, error=ex.args), 400
 
         #----------------- UTILIZANDO LA LIBRERIA DE SENDGRID ------------------------------
         '''try:
@@ -120,3 +121,37 @@ class RecetPasswordController(Resource):
         except Exception as ex:
             return Message.GetMessage(message='Hubo un error al recetear la password', success=False, error=ex.args), 500 '''
                 
+class ChangePasswordController(Resource):
+    def put(self):
+        try:
+            body = request.get_json()
+            data = ChangePasswordRequestDTO().load(body)
+            fernet = Fernet(environ.get('FERNET_SECRET_KEY'))
+            diccionario = json.loads(fernet.decrypt(bytes(data.get('token'), 'utf-8')).decode('utf-8'))
+            fecha_caducidad = datetime.strptime(diccionario.get('fecha_caducidad'), "%Y-%m-%d %H:%M:%S.%f")
+            if(datetime.now() <= fecha_caducidad):
+                usuario_encontrado : ModelUsuario | None = conexion.session.query(ModelUsuario).filter_by(id = diccionario.get('id_usuario')).first()
+                #usuario_encontrado : ModelUsuario | None = conexion.session.query(ModelUsuario).with_entities(ModelUsuario.id, ModelUsuario.password, ModelUsuario.correo).filter_by(id = diccionario.get('id_usuario')).first()
+                if usuario_encontrado is not None:
+                    usuario_encontrado.password = data.get('password')
+                    usuario_encontrado.encripta_pwr()
+                    conexion.session.commit()
+                    resultado = UsuarioResponseDTO().dump(usuario_encontrado)
+                    # 
+                    texto = ''
+                    with open("templates/email/change_password.html") as f:
+                        texto = f.read()
+                    html = texto.format(usuario_encontrado.nombre, usuario_encontrado.correo, (environ.get('URL_FRONT')+'/solicitar-nueva-contra'))
+
+                    enviar_correo = EnviarCorrreo(usuario_encontrado.correo, 'APP Monedero | Contraseña modificado', html, 'html')
+                    resultado_envio = enviar_correo.enviarPorSMTP()
+                    print(resultado_envio)
+                    return Message.GetMessage(message='Su contraseña fue modificado correctamente', success=True, data=resultado), 200
+                else:
+                    return Message.GetMessage(message='No fue posible modificar la contraseña', success=False), 404
+            else:
+                return Message.GetMessage(message='Su token ha caducado', success=False), 401
+        except ValidationError as ex:
+            return Message.GetMessage(message='Hubo un error en la info', success=False, error=ex.args), 401
+        except Exception as ex:
+            return Message.GetMessage(message='Hubo un error al recetear la password', success=False, error=ex.args), 401

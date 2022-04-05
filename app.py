@@ -11,7 +11,8 @@ from seed import categoriasSeed
 from cryptography.fernet import Fernet
 import json
 
-from controllers.usuarios import LogginController, RegistroController, UsuarioResponseDTO, RecetPasswordController, ModelUsuario
+from controllers.usuarios import (LogginController, RegistroController, UsuarioResponseDTO, RecetPasswordController, 
+                                ModelUsuario, ChangePasswordController)
 from controllers.movimientos import MovimientoController
 from dtos.usuario_dto import ValidarTokenRequestDTO
 
@@ -134,6 +135,7 @@ def validar_token():
 api.add_resource(RegistroController, '/registro')
 api.add_resource(LogginController, '/loggin')
 api.add_resource(RecetPasswordController, '/reset-password')
+api.add_resource(ChangePasswordController, '/change-password')
 api.add_resource(MovimientoController, '/movimiento', '/movimientos')
 
 if(__name__ == '__main__'):
