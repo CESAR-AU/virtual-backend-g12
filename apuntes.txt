@@ -1,6 +1,0 @@
-$  pip install flask flask-restful flask-sqlalchemy flask-marshmallow mysqlclient
-$  pip install marshmallow-sqlalchemy python-dotenv
-$  pip install pip install bcrypt > para generar hash
-
- py -m unittest tests/test*.py -v >para ejecutar el test de varios archivos
- py -m unittest tests/test_inicio_flask.py -v >para ejecutar test de un soo archivo
