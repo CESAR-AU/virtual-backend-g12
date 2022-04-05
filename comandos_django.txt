@@ -1,0 +1,8 @@
+CLI -> Interfaz de Linea de comandos
+Todos los comando de django se reliza mefiante el comando [django-admin]
+[django-admin startproject ] iniciar un proyecto
+python manage.py runserver > levantar el proyecto en django
+python .\manage.py showmigrations > para ver las migraciones
+python .\manage.py migrate > para realizar las migraciones
+python .\manage.py migrate nombre_migracion > para realizar las migraciones de la nombre_migracion.py
+python .\manage.py startapp [nombre_app] > para crear una app

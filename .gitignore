@@ -1,0 +1,4 @@
+/entorno_django
+__pycache__/
+*.pyc
+.env
