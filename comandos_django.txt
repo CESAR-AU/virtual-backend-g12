@@ -6,3 +6,9 @@ python .\manage.py showmigrations > para ver las migraciones
 python .\manage.py migrate > para realizar las migraciones
 python .\manage.py migrate nombre_migracion > para realizar las migraciones de la nombre_migracion.py
 python .\manage.py startapp [nombre_app] > para crear una app
+python .\manage.py makemigrations --help > para ver todas las opciones de la migracion
+python .\manage.py makemigrations app --name creacion_tabla_etiquetas > para migrar todos los cambios de las tablas
+python .\manage.py makemigrations NOMBRE_APP --name NOMBRE_MIGRACION > creara una nueva migracion de nuestra aplicacion con todos los cambios que se habran hecho en el ORM
+python .\manage.py sqlmigrate NOMBRE_APP NUMERO_MIGRACION > mostrara el SQL de la migracion creada 
+python .\manage.py migrate app 0001 > para revertir
+python .\manage.py migrate app zero > para revertir todas las migraciones al principio

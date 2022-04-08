@@ -1,2 +1,4 @@
 1-> pip install django
 2-> pip install mysqlclient
+3-> pip install python-dotenv
+4-> pip install djangorestframework
