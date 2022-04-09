@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .env
+/agenda/imagenes
+/agenda/multimedia
+*.jpg | *.jpeg | *.png | *.gif

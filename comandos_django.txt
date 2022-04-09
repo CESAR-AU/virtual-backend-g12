@@ -12,3 +12,5 @@ python .\manage.py makemigrations NOMBRE_APP --name NOMBRE_MIGRACION > creara un
 python .\manage.py sqlmigrate NOMBRE_APP NUMERO_MIGRACION > mostrara el SQL de la migracion creada 
 python .\manage.py migrate app 0001 > para revertir
 python .\manage.py migrate app zero > para revertir todas las migraciones al principio
+python .\manage.py dbshell > para ebrir una terminal de mysql
+python .\manage.py flush > remueve toda la data de la DB

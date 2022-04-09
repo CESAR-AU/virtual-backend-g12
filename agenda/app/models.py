@@ -40,6 +40,8 @@ class Tarea(models.Model):
     updateAt = models.DateTimeField(auto_now=True, db_column='update_at')
 
     etiquetas = models.ManyToManyField(to=Etiqueta, related_name='tareas')
+    #nuevo campo
+    foto = models.ImageField(upload_to='multimedia', null=True)
     class Meta:
         db_table = "tbl_tareas"
-        #ordering = ['importancia'] 
+        #ordering = ['importancia']
