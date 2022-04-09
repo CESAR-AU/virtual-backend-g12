@@ -5,15 +5,17 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, DestroyAPIView
 from .serializers import (PruebaSerializer, TareasSerializer, EtiquetaSerializer, 
-TareaSerializer, TareaPersonalizableSerializer, ArchivoSerializer)
+TareaSerializer, TareaPersonalizableSerializer, ArchivoSerializer, EliminarArchivoSerializer)
 from .models import Tarea, Etiqueta
 from datetime import datetime
 from django.utils import timezone
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from os import remove
+from django.conf import settings
 
 @api_view(http_method_names=['GET', 'POST'])
 def inicio(resquest: Request):
@@ -121,8 +123,7 @@ class ArchivosApiView(CreateAPIView):
             if(archivo.size > (5 * 1024 * 1024)):
                 return Response(data={
                 'message': 'Archivo muy grande, no puede ser mas de 5MB',
-                'data': data.data,
-                'ruta': resultado
+                'data': data.data
                 }, status=status.HTTP_400_BAD_REQUEST)
             ruta = carpeta_destino + '/' if carpeta_destino is not None else ''
             ruta = ruta + nombre_archivo if nombre_archivo is not None else ruta + archivo.name
@@ -138,3 +139,33 @@ class ArchivosApiView(CreateAPIView):
                 'message': 'Seleccione una imagen para subir',
                 'data': data.errors
                 }, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarArchivoApiView(DestroyAPIView):
+    serializer_class = EliminarArchivoSerializer
+    def delete(self, request:Request):
+        data = self.serializer_class(data=request.data)
+        try:
+            data.is_valid(raise_exception=True)
+            ruta = data.validated_data.get('archivo')
+            remove(settings.MEDIA_ROOT / ruta)
+            return Response(data={
+                    'message': 'Archivo eliminado',
+                    'data': data.data
+                    }, status=status.HTTP_200_OK)
+            '''if(data.is_valid()):
+                ruta = data.validated_data.get('archivo')
+                remove(settings.MEDIA_ROOT / ruta)
+                return Response(data={
+                    'message': 'Archivo eliminado',
+                    'data': data.data
+                    }, status=status.HTTP_200_OK)
+            else:
+                return Response(data={
+                    'message': 'No se pudo eliminar el archivo',
+                    'data': data.errors
+                    }, status=status.HTTP_400_BAD_REQUEST)'''
+        except Exception as ex:
+            return Response(data={
+                    'message': 'Error al eliminar el archivo',
+                    'error': ex.args
+                    }, status=status.HTTP_400_BAD_REQUEST)

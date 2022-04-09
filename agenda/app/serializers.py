@@ -53,3 +53,6 @@ class ArchivoSerializer(serializers.Serializer):
     #archivo = serializers.ImageField(required=True, max_length=100, use_url=True, verbose_name='multimedia')
     archivo = serializers.ImageField(required=True, max_length=100, use_url=True)
     help_text = 'Solo imagenes'
+
+class EliminarArchivoSerializer(serializers.Serializer):
+    archivo = serializers.CharField(required=True, max_length=100)
