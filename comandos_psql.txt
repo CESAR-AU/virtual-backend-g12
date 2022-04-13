@@ -1,0 +1,9 @@
+psql -U postgres > para entrar o iniciar
+psql -U [USER] > para entrar o iniciar por default es postgres
+psql -U postgres -d prueba -p 5432 > para conectarse directo a la db
+
+postgres=# \l > para listar las DB's
+postgres=# \c [NOMBRE DB]> Para cambiar a una DB
+postgres=# \q > para salir o cerrar la session
+postgres=# \dt > muestra las tablas
+postgres=# \d [auth_user] > muestra las columnas de las tablas
