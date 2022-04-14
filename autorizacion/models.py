@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .authManager import UserManager
 # Create your models here.
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True, null=False)
-    correo = models.CharField(unique=True, null=False)
+    correo = models.EmailField(unique=True, null=False)
     password = models.TextField(null=False)
     nombre = models.CharField(max_length=45, null=False)
     rol = models.CharField(choices=(
@@ -18,7 +19,13 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     updateAt = models.DateTimeField(auto_now=True, db_column='update_at')
 
     #modelo de autorizacion 
-    objects = None
+    objects = UserManager()
+
+    def encriptar_pwr(self):
+        pass
+
+    USERNAME_FIELD = 'correo'
+    REQUIRED_FIELDS = ['nombre', 'rol']
 
     class Meta:
         db_table = "tbl_usuarios"
