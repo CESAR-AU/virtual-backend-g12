@@ -4,3 +4,4 @@
 4-> pip install djangorestframework
 5-> pip install Pillow
 6-> pip install djangorestframework-simplejwt
+7-> pip install cloudinary

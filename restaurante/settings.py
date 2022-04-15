@@ -14,6 +14,9 @@ from pathlib import Path
 from os import environ
 from dotenv import load_dotenv
 from datetime import timedelta
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 load_dotenv()
 
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'cloudinary',
     'fact_electr',
     'menu',
     'autorizacion',
@@ -147,3 +151,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME' : timedelta(hours=1)
 }
+
+cloudinary.config(
+    cloud_name = environ.get('CLOUDINARY_NAME'),
+    api_key = environ.get('CLOUDINARY_API_KEY'),
+    api_secret = environ.get('CLOUDINARY_SECRET'),
+)
