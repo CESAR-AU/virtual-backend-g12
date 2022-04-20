@@ -14,3 +14,15 @@ class Plato(models.Model):
 
     class Meta:
         db_table = "tbl_platos"
+
+class Stock(models.Model):
+    id = models.AutoField(primary_key=True, unique=True, null=False)
+    fecha = models.DateField(null=False)
+    cantidad = models.IntegerField(null=False)
+    precio_diario = models.FloatField(null=False)
+
+    platoId = models.ForeignKey(to=Plato, related_name='stock', on_delete=models.CASCADE, db_column='plato_id')
+
+    class Meta:
+        db_table = 'tbl_stock'
+        unique_together = [['fecha', 'platoId']]
