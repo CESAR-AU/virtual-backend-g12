@@ -1,4 +1,6 @@
 /entorno_django
+/static_files
+/frontend
 __pycache__/
 *.pyc
 .env

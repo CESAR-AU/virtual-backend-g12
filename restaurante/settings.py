@@ -31,9 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v@e$+7-n=8^)in6*jo@n+thde+pyy%l=^&2u5w84kzh2o4ppuo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '99fc-190-237-34-201.sa.ngrok.io']
 
 
 # Application definition
@@ -45,8 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Librerias
     'rest_framework',
     'cloudinary',
+    'corsheaders',
+    # Aplicaciones
     'fact_electr',
     'menu',
     'autorizacion',
@@ -54,7 +57,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # manual
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # manual
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -157,3 +162,13 @@ cloudinary.config(
     api_key = environ.get('CLOUDINARY_API_KEY'),
     api_secret = environ.get('CLOUDINARY_SECRET'),
 )
+# para indicar los archivos estaticos
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# sirve para cuando corramos 'py manage.py collectstatic'
+STATIC_ROOT = BASE_DIR / 'static_files'
+
+# CORS
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5500', 'http://localhost:4040']
+CORS_ALLOWED_METHODS = ['GET','POST']
+CORS_ALLOWED_HEADERS = ['content-type', 'authorization', 'origin']

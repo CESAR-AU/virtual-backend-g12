@@ -11,11 +11,15 @@ class StockSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Stock
-        '''depth = 1
-        extra_kwargs = {
+        depth = 1
+        '''extra_kwargs = {
             'id':{'read_only':True},
             'plato_id':{'read_only':True},
         }'''
+class StockCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = Stock
 
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:

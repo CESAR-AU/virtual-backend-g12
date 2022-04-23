@@ -1,11 +1,11 @@
 from .models import Plato, Stock
-from .serializers import PlatoSerializer, StockSerializer, PedidoSerializer, AgregarDetallePedidoSerializer
+from .serializers import PlatoSerializer, StockCreateSerializer, StockSerializer, PedidoSerializer, AgregarDetallePedidoSerializer
 from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from rest_framework.permissions import (AllowAny, #Controlador publica
 IsAuthenticated, #Solisita una token
 IsAuthenticatedOrReadOnly, #Solisita una token, solo GET no requiere
 IsAdminUser, # Valida si es super usuario
-)
+SAFE_METHODS)
 from rest_framework.request import Request
 from rest_framework.response import Response
 from cloudinary import CloudinaryImage
@@ -14,6 +14,7 @@ from .permissions import SoloAdminPuedeEscribir, SoloMozoPuedeEscribir
 from fact_electr.models import Pedido, DetallePedido
 from rest_framework import status
 from django.utils import timezone
+from django.db import transaction, IntegrityError
 
 # Create your views here.
 class PlatoApiView(ListCreateAPIView):
@@ -36,9 +37,13 @@ class PlatoApiView(ListCreateAPIView):
         })
 
 class StockApiView(ListCreateAPIView):
-    serializer_class = StockSerializer
+    # serializer_class = StockSerializer
     queryset = Stock.objects.all()
     permission_classes = [IsAuthenticated, SoloAdminPuedeEscribir]
+    def get_serializer_class(self):
+        if not self.request.method in SAFE_METHODS:
+            return StockCreateSerializer
+        return StockSerializer
 
 class PedidoApiView(ListCreateAPIView):
     serializer_class = PedidoSerializer
@@ -64,20 +69,31 @@ class AgregarDetallePedidoApiView(CreateAPIView):
         data = self.serializer_class(data=request.data)
         data.is_valid(raise_exception=True)
         # data.save()
-        dataStock : Stock | None = Stock.objects.filter(fecha=timezone.now(), platoId = data.validated_data.get('plato_id')).first()
-        cantidad = data.validated_data.get('cantidad')
-        print(dataStock)
-        print(dataStock.cantidad)
-        print('ID',data.validated_data.get('plato_id'))
+        dataStock : Stock | None = Stock.objects.filter(fecha=timezone.now(), platoId = data.validated_data.get('plato_id'), cantidad__gte=data.validated_data.get('cantidad')).first()
+        print('ID', data.validated_data.get('plato_id'))
+        print('dataStock', dataStock)
+        print('CANTIDAD', data._validated_data.get('cantidad'))
+        
         if (dataStock is None):
-            return Response(data={ 'message':'No hay stock del plato para agregar' })
-        else:
-            if(dataStock.cantidad >= cantidad):
-                return Response(data={
-                    'message':'Detalle agregado al pedido exitosamente',
-                    'data': data.data
-                }, status=status.HTTP_201_CREATED)
-            else:
-                return Response(data={
-                    'message':'El stock es mayor al stock actual',         
-                }, status=status.HTTP_204_NO_CONTENT)
+            return Response(data={ 'message':'No hay stock para ese producto para el dia de hoy' },status=status.HTTP_400_BAD_REQUEST)
+        print('ID 2',data.validated_data.get('plato_id'))
+        
+        pedido:Pedido|None = Pedido.objects.filter(id=data.validated_data.get('pedido_id')).first()
+        if (pedido is None):
+            return Response(data={'message':'No hay ese pedido'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            with transaction.atomic():
+                nuevo_detalle = DetallePedido(cantidad=data.validated_data.get('cantidad'), stockId = dataStock, pedidoId = pedido)
+                nuevo_detalle.save()
+                dataStock.cantidad = dataStock.cantidad - nuevo_detalle.cantidad
+                dataStock.save()
+                pedido.total += (nuevo_detalle.cantidad * dataStock.precio_diario)
+                pedido.save()
+            
+        except IntegrityError:
+            return Response(data={'message':'Error al crear el pedido'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except:
+            return Response(data={'message':'Error en el servidor'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(data={'message':'Detalle agrtegado al pedido'}, status=status.HTTP_200_OK)
+            

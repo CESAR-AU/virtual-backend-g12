@@ -17,3 +17,4 @@ python .\manage.py dbshell > para ebrir una terminal de mysql
 python .\manage.py flush > remueve toda la data de la DB
 python .\manage.py test app.tests.EtiquetasTestCase.test_crear_etiqueta_success > ejecuta el test creado
 python .\manage.py test app -v 2 > ejecuta el test creado detallado (0 - 3)
+python .\manage.py collectstatic > para crear archivos estaticos para el modo de PRODUCCION

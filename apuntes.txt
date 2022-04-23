@@ -6,3 +6,5 @@
 5-> pip install Pillow
 6-> pip install djangorestframework-simplejwt
 7-> pip install cloudinary
+8-> pip install django-cors-headers
+9-> pip install whitenoise
