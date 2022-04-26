@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-v@e$+7-n=8^)in6*jo@n+thde+pyy%l=^&2u5w84kzh2o4ppuo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '99fc-190-237-34-201.sa.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '99fc-190-237-34-201.sa.ngrok.io', 'restaurante-django-ere.herokuapp.com']
 
 
 # Application definition

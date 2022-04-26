@@ -1,22 +1,23 @@
-const URL_BACKEND = "http://localhost:8000"
+const URL_BACKEND = "http://66.94.104.30:8000"
+// const URL_BACKEND = "http://localhost:8000"
 
 
 // Peticion normal
 async function pedirPlatos() {
-  const respuesta = await fetch(URL_BACKEND + `/menu/`, { method: "GET" });
+  const respuesta = await fetch(URL_BACKEND + `/platos/`, { method: "GET" });
   const data = await respuesta.json();
   console.log(data);
 }
 
 async function login() {
-  const respuesta = await fetch(URL_BACKEND + "/auth/login/", {
+  const respuesta = await fetch(URL_BACKEND + "/auth/inicio-sesion/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       correo: "mozo@c-innova.pe",
-      password: "123456",
+      password: "amigos",
     }),
   });
   const data = await respuesta.json();
@@ -26,7 +27,7 @@ async function login() {
 
 // Usando Bearer Token
 async function listarStock(token) {
-  const respuesta = await fetch(URL_BACKEND + "/menu/stock", {
+  const respuesta = await fetch(URL_BACKEND + "/platos/stock", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
