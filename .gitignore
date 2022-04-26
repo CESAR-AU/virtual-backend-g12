@@ -1,9 +1,0 @@
-/entorno_django
-/static_files
-/frontend
-__pycache__/
-*.pyc
-.env
-/agenda/imagenes
-/agenda/multimedia
-*.jpg | *.jpeg | *.png | *.gif
