@@ -1,1 +1,7 @@
 npm i --save-dev lib > solo se instala para el desarrollo
+
+npm install --save-dev nodemon > para servidor modo desarrollo
+
+npm install prisma --save-dev > para instalar el ORM Prisma en modo desarrollo
+npx prisma init > para iniciar con prisma
+npx prisma migrate dev > para correr las migraciones de prisma

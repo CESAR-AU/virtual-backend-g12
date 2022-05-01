@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario{
+  id Int @id @unique @default(autoincrement())
+  nombre String?
+  email String @unique
+  password String
+  rol USUARIO_ROL @default(CLIENTE)
+  validado Boolean @default(false)
+
+  pedidos Pedido[]
+
+  @@map("tbl_usuarios")
+  // @@unique([email])
+}
+
+model Producto{
+  id Int @id @unique @default(autoincrement())
+  nombre String
+  precio Float
+  unidadMedida UNIDAD_MEDIDA @default(UNIDAD) @map("unidad_medida")
+  categoria CATEGORIA_PRODUCTO @default(OTROS)
+
+  detallePedidos DetallePedido[]
+
+  @@map("tbl_productos")
+}
+
+model Pedido{
+  id Int @id @unique @default(autoincrement())
+  fecha DateTime @db.Date
+  total Float
+  estado PEDIDO_ESTADO @default(CREADO)
+  process_id String?
+
+  detallePedidos DetallePedido[]
+
+  clienteId Int
+  cliente Usuario @relation(fields: [clienteId], references: [id])
+
+  @@map("tbl_pedidos")
+}
+
+model DetallePedido{
+  id Int @id @unique @default(autoincrement())
+  cantidad Float
+  subTotal Float @map("sub_total")
+  unidadMedida UNIDAD_MEDIDA @default(UNIDAD) @map("unidad_medida")
+
+  productoId Int @map("producto_id")
+  producto Producto @relation(fields: [productoId], references: [id])
+  pedidoId Int @map("pedido_id")
+  pedido Pedido @relation(fields: [pedidoId], references: [id])
+
+  @@map("tbl_detalle_pedidos")
+}
+
+//ENUMS
+enum USUARIO_ROL {
+  ADMINISTRADOR
+  CLIENTE
+}
+
+enum UNIDAD_MEDIDA {
+  KG
+  UNIDAD
+}
+
+enum CATEGORIA_PRODUCTO {
+  VERDURA
+  FRUTA
+  ELECTRODOMESTICO
+  LIMPIEZA
+  OTROS
+}
+
+enum PEDIDO_ESTADO {
+  CREADO
+  ACEPTADO
+  PAGADO
+  ERROR
+}
