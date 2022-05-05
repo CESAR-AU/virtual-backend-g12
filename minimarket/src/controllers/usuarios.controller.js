@@ -21,6 +21,8 @@ export const crearUsuario = async (req, res) => {
             JSON.stringify({nombre: nuevoUsuario.nombre, email: nuevoUsuario.email}),
             process.env.LLAVE_ENCRIPTACION
         ).toString();
+
+        console.log('hash: ', hash);
         
         await enviarCorreoValidacion({destino:nuevoUsuario.email, hash:hash})
         return res.status(201).json({
@@ -44,9 +46,11 @@ export const login = async (req,res)=> {
     try{
         const data = loginRequestDTO(req.body)
         const usuario = await Prisma.usuario.findFirst({ 
-            where:{email: req.email},
+            where:{email: data.email},
             rejectOnNotFound:true
         })
+        // console.log('USUARIO LOGIN: ', data)
+        // console.log('USUARIO LOGIN ENCONTRADO: ', usuario)
         // validar password
         if(compareSync(data.password, usuario.password)){
             const token = jsonwebtoken.sign({
