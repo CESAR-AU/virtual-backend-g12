@@ -1,0 +1,3 @@
+db > nuestra la base de datos utilizado
+use NOMBRE_DB > crea una nueva DB
+db.NOMBRE.insertOne({...DATA}) > crea la tabla si no existe e inserta una data inicial
