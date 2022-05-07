@@ -1,5 +1,6 @@
 import { Usuario } from "../models/usuarios.models.js";
 import bcriptjs from "bcryptjs";
+import jwt from 'jsonwebtoken'
 
 export const registrarUsuario = async (req, res) => {
   try {
@@ -38,8 +39,15 @@ export const login = async (req, res) => {
     console.log(usuarioEncontrado)
 
     if (bcriptjs.compareSync(data.password, usuarioEncontrado.password)) {
+      const token = jwt.sign(
+        {_id: usuarioEncontrado._id},
+        process.env.JWT_SECRET,
+        { expiresIn: "12h" }
+      );
+
       return res.status(200).json({
         message: "Bienvenido",
+        data: token
       });
     } else {
       return res.status(400).json({
