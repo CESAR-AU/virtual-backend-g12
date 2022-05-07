@@ -13,9 +13,9 @@ app.use(express.json())
 app.use(usuarioRouter, librosRouter);
 
 const PORT = process.env.PORT ?? 3000;
-
+console.log("APPPPPPPPPPP");
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect(process.env.MONGO_URL, {dbName: process.env.DBNAME})
   .then((value) => {
     console.log("Conectado a la DB ✔");
   })

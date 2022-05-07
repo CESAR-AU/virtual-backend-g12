@@ -1,0 +1,7 @@
+node_modules/
+.env
+apuntes.txt
+comando_mongoDB.txt
+comandos_npm.txt
+.gitignore
+Dockerfile

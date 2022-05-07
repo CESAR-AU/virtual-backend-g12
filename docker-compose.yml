@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api-librero:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    ports:
+      - 5000:3000
+      - 4000:3030
+    # 
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - database-mongo
+    env_file: .env
+    environment:
+      - MONGO_URL=mongodb://juan:123456@database-mongo:27017
+      - DBNAME=librero
+  database-mongo:
+    image: mongo:latest
+    ports:
+      - 3000:27017
+      - 3001:27017
+    environment:
+      # - MONGO_INITDB_ROOT_USERNAME=juan
+      # - MONGO_INITDB_ROOT_PASSWORD=123456
+      # - MONGO_INITDB_DATABASE=librero
+      MONGO_INITDB_ROOT_USERNAME: juan
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: librero
